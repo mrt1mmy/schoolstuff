@@ -3,24 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Advanced CPS Tester Pro</title>
+    <title>Ultima CPS Trainer v2</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root {
             --bg: #0f172a; --panel: #1e293b; --text: #f8fafc; --accent: #38bdf8;
-            --accent-hover: #0ea5e9; --danger: #ef4444; --success: #22c55e;
+            --danger: #ef4444; --success: #22c55e; --gold: #fbbf24;
         }
 
-        /* --- THEME DEFINITIONS (18 TOTAL) --- */
+        /* 18 THEMES */
         [data-theme="light"] { --bg: #f1f5f9; --panel: #ffffff; --text: #0f172a; --accent: #2563eb; }
-        [data-theme="neon"] { --bg: #000000; --panel: #111111; --text: #00ff41; --accent: #00ff41; }
+        [data-theme="neon"] { --bg: #000; --panel: #111; --text: #00ff41; --accent: #00ff41; }
+        [data-theme="cyberpunk"] { --bg: #000; --panel: #1a1a1a; --text: #f3e600; --accent: #ff003c; }
         [data-theme="sunset"] { --bg: #2d1b2d; --panel: #4a264a; --text: #ffd166; --accent: #ef476f; }
         [data-theme="ocean"] { --bg: #001219; --panel: #005f73; --text: #94d2bd; --accent: #ee9b00; }
         [data-theme="forest"] { --bg: #061e16; --panel: #112d23; --text: #ecf3f0; --accent: #52b788; }
-        
-        /* New Themes */
-        [data-theme="cyberpunk"] { --bg: #000; --panel: #1a1a1a; --text: #f3e600; --accent: #ff003c; }
-        [data-theme="matrix"] { --bg: #000; --panel: #001100; --text: #00FF41; --accent: #008F11; }
         [data-theme="lavender"] { --bg: #f3f0ff; --panel: #ffffff; --text: #5b21b6; --accent: #8b5cf6; }
         [data-theme="midnight"] { --bg: #020617; --panel: #1e1b4b; --text: #e0e7ff; --accent: #6366f1; }
         [data-theme="rose"] { --bg: #fff1f2; --panel: #ffe4e6; --text: #9f1239; --accent: #f43f5e; }
@@ -31,319 +28,345 @@
         [data-theme="coffee"] { --bg: #3e2723; --panel: #4e342e; --text: #d7ccc8; --accent: #a1887f; }
         [data-theme="nordic"] { --bg: #2e3440; --panel: #3b4252; --text: #eceff4; --accent: #88c0d0; }
         [data-theme="gold"] { --bg: #1a1a1a; --panel: #262626; --text: #d4af37; --accent: #ffd700; }
+        [data-theme="matrix"] { --bg: #000; --panel: #001100; --text: #00FF41; --accent: #008F11; }
+        [data-theme="dracula"] { --bg: #282a36; --panel: #44475a; --text: #f8f8f2; --accent: #bd93f9; }
 
         body {
-            font-family: 'Inter', system-ui, sans-serif;
-            background-color: var(--bg);
-            color: var(--text);
-            margin: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            transition: background 0.4s ease, color 0.4s ease;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background-color: var(--bg); color: var(--text);
+            margin: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh;
+            overflow-x: hidden; transition: background 0.3s;
         }
 
         .container {
-            width: 95%;
-            max-width: 850px;
-            background: var(--panel);
-            padding: 2.5rem;
-            border-radius: 1.5rem;
-            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.6);
-            text-align: center;
+            width: 95%; max-width: 900px; background: var(--panel);
+            padding: 2rem; border-radius: 1.5rem; box-shadow: 0 20px 50px rgba(0,0,0,0.4);
+            position: relative; z-index: 10;
         }
 
-        .header { display: flex; justify-content: space-around; margin-bottom: 2rem; }
-        .stat-box { flex: 1; }
-        .stat-value { font-size: 2rem; font-weight: 800; color: var(--accent); display: block; }
+        .header { display: flex; justify-content: space-between; margin-bottom: 1.5rem; text-align: center; }
+        .stat-value { font-size: 1.8rem; font-weight: 900; color: var(--accent); display: block; }
 
         #click-area {
-            width: 100%;
-            height: 300px;
-            background: rgba(255,255,255,0.03);
-            border: 4px dashed var(--accent);
-            border-radius: 1rem;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            cursor: pointer;
-            user-select: none;
-            margin-bottom: 2rem;
-            transition: transform 0.05s, border-color 0.3s;
+            width: 100%; height: 260px; background: rgba(255,255,255,0.03);
+            border: 4px dashed var(--accent); border-radius: 1rem;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            cursor: pointer; user-select: none; position: relative; overflow: hidden;
         }
-        #click-area:active { transform: scale(0.97); }
-        #click-area.disabled { cursor: not-allowed; opacity: 0.4; border-style: solid; }
-        
-        .click-hint { font-size: 1.5rem; font-weight: bold; letter-spacing: 1px; }
+        #particle-canvas { position: absolute; top: 0; left: 0; pointer-events: none; width: 100%; height: 100%; }
 
-        .main-controls { display: flex; gap: 1rem; align-items: center; justify-content: center; margin-bottom: 1rem; }
-        button {
-            padding: 0.8rem 1.8rem;
-            border-radius: 0.6rem;
-            border: none;
-            cursor: pointer;
-            font-weight: bold;
-            font-size: 1rem;
-            transition: filter 0.2s;
-        }
-        button:hover { filter: brightness(1.2); }
+        .controls { display: flex; gap: 1rem; margin: 1.5rem 0; align-items: center; justify-content: center; }
+        button { padding: 0.8rem 1.2rem; border-radius: 0.5rem; border: none; cursor: pointer; font-weight: bold; transition: transform 0.1s; }
+        button:active { transform: scale(0.95); }
         .btn-reset { background: var(--danger); color: white; }
-        .btn-settings { background: #475569; color: white; }
-
-        /* Settings Grid */
-        #settings-panel {
-            display: none;
-            text-align: left;
-            background: rgba(0,0,0,0.15);
-            padding: 2rem;
-            border-radius: 1rem;
-            margin-top: 1.5rem;
-        }
-        .theme-grid { 
-            display: grid; 
-            grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); 
-            gap: 12px; 
-            margin-top: 10px;
-        }
-        .theme-opt {
-            display: flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.1);
-            padding: 8px; border-radius: 8px; cursor: pointer; font-size: 0.85rem;
-            border: 1px solid transparent;
-        }
+        .btn-settings { background: #64748b; color: white; }
+        
+        .settings-grid { display: none; grid-template-columns: 1fr 1fr; gap: 2rem; text-align: left; background: rgba(0,0,0,0.2); padding: 1.5rem; border-radius: 1rem; }
+        
+        /* Theme Grid Fix */
+        .theme-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 8px; max-height: 180px; overflow-y: auto; padding-right: 5px; }
+        .theme-opt { display: flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.05); padding: 6px; border-radius: 4px; cursor: pointer; font-size: 0.7rem; border: 1px solid transparent; }
         .theme-opt:hover { border-color: var(--accent); }
-        .palette { display: flex; width: 35px; height: 22px; border-radius: 4px; overflow: hidden; border: 1px solid #000; flex-shrink: 0; }
-        .pal-1 { width: 50%; height: 100%; }
-        .pal-2 { width: 50%; height: 100%; }
+        .palette { display: flex; width: 24px; height: 16px; border-radius: 3px; overflow: hidden; border: 1px solid rgba(255,255,255,0.2); flex-shrink: 0; }
+        .pal-bg { width: 60%; height: 100%; }
+        .pal-acc { width: 40%; height: 100%; }
 
-        #results-container { display: none; margin-top: 2rem; animation: fadeIn 0.5s ease; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        /* Results Layout */
+        .results-area { display: none; margin-top: 2rem; border-top: 2px solid rgba(255,255,255,0.1); padding-top: 1.5rem; }
+        .results-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem; }
+        .rank-card { background: var(--accent); color: var(--bg); padding: 1.5rem; border-radius: 1rem; text-align: center; display: flex; flex-direction: column; justify-content: center; }
+        .rank-name { font-size: 1.8rem; font-weight: 900; line-height: 1.1; margin: 10px 0; }
 
-        input {
-            background: rgba(255,255,255,0.1); border: 1px solid var(--accent); color: var(--text);
-            padding: 0.6rem; border-radius: 0.5rem; width: 100%; box-sizing: border-box;
-        }
+        /* Leaderboard */
+        .leaderboard { background: rgba(0,0,0,0.1); padding: 1rem; border-radius: 1rem; }
+        .leaderboard h4 { margin: 0 0 10px 0; font-size: 0.9rem; text-transform: uppercase; color: var(--accent); }
+        .lb-entry { display: flex; justify-content: space-between; font-size: 0.85rem; padding: 4px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
+
+        input, select { background: #334155; border: 1px solid #475569; color: white; padding: 0.4rem; border-radius: 4px; width: 100%; box-sizing: border-box; }
+        .shake-active { animation: shake 0.1s infinite; }
+        @keyframes shake { 0% {transform:translate(1px,1px)} 20% {transform:translate(-1px,0px)} 40% {transform:translate(1px,-1px)} 100% {transform:translate(0,0)} }
     </style>
 </head>
 <body>
 
-<div class="container">
+<div class="container" id="main-container">
     <div class="header">
-        <div class="stat-box">TIME <span id="display-timer" class="stat-value">0.0s</span></div>
-        <div class="stat-box">CPS <span id="display-cps" class="stat-value">0.00</span></div>
-        <div class="stat-box">CLICKS <span id="display-clicks" class="stat-value">0</span></div>
+        <div><span style="font-size:0.7rem; opacity:0.7">TARGET</span><span id="target-val" class="stat-value">5.0s</span></div>
+        <div><span style="font-size:0.7rem; opacity:0.7">CLICKS</span><span id="stat-clicks" class="stat-value">0</span></div>
+        <div><span style="font-size:0.7rem; opacity:0.7">CPS</span><span id="stat-cps" class="stat-value">0.0</span></div>
     </div>
 
     <div id="click-area">
-        <div class="click-hint" id="click-instruction">Click to Start</div>
-        <div style="margin-top: 8px; opacity: 0.7;" id="key-hint">Input: Left Click</div>
+        <canvas id="particle-canvas"></canvas>
+        <div id="click-text" style="font-size: 2rem; font-weight: 800; z-index: 5;">CLICK TO START</div>
+        <div id="input-hint" style="font-size: 0.8rem; opacity: 0.6; margin-top: 10px; z-index: 5;">Input: Mouse Left</div>
     </div>
 
-    <div class="main-controls">
-        <div style="display: flex; align-items: center; gap: 10px;">
-            <label>Seconds:</label>
-            <input type="number" id="test-duration" value="5" min="1" max="60" style="width: 70px;">
-        </div>
-        <button class="btn-reset" onclick="resetTest()">Reset Test</button>
-        <button class="btn-settings" onclick="toggleSettings()">Settings</button>
+    <div class="controls">
+        <select id="mode-select" onchange="changeMode()" style="width: auto;">
+            <option value="time">Time Attack</option>
+            <option value="sprint">Sprint (100 Clicks)</option>
+        </select>
+        <input type="number" id="mode-input" value="5" style="width: 70px;">
+        <button class="btn-reset" onclick="resetTest()">RESET</button>
+        <button class="btn-settings" onclick="toggleSettings()">SETTINGS</button>
     </div>
 
-    <div id="settings-panel">
-        <h3 style="margin-top:0">Settings</h3>
-        
-        <div style="margin-bottom: 1.5rem;">
-            <label><b>Binding (Keyboard CPS):</b></label>
-            <input type="text" id="key-config" placeholder="Click to bind key..." readonly 
-                   onclick="captureKey()" style="cursor: pointer; margin-top:5px; text-align: center;">
-            <p style="font-size: 0.8rem; opacity: 0.8;">Click the box above then press any key to use that key instead of the mouse.</p>
-        </div>
-
-        <label><b>Color Themes (18 Options):</b></label>
-        <div class="theme-grid" id="theme-grid">
+    <div id="settings-panel" class="settings-grid">
+        <div>
+            <label><b>Inputs</b></label>
+            <input type="text" id="key-bind" readonly placeholder="Bind Key..." onclick="bindKey()" style="margin: 5px 0;">
+            <label style="font-size:0.7rem;"><input type="checkbox" id="multi-key"> Multi-Key Mode</label>
+            
+            <label style="display:block; margin-top:15px;"><b>Juice</b></label>
+            <div style="font-size: 0.8rem;">
+                Sound: <select id="sound-type"><option value="none">None</option><option value="pop">Bubble Pop</option><option value="click">Mechanical</option></select>
+                <br><label><input type="checkbox" id="check-particles" checked> Particles</label>
+                <br><label><input type="checkbox" id="check-shake" checked> Screen Shake</label>
             </div>
+        </div>
+
+        <div>
+            <label><b>Themes</b></label>
+            <div class="theme-list" id="theme-grid"></div>
+        </div>
     </div>
 
-    <div id="results-container">
-        <hr style="opacity: 0.2; margin: 2rem 0;">
-        <h3>Consistency Graph</h3>
-        <canvas id="cpsChart"></canvas>
+    <div id="results-area" class="results-area">
+        <div class="results-grid">
+            <div class="rank-card">
+                <span style="font-size: 0.7rem; font-weight: bold; opacity: 0.8;">YOUR RANK</span>
+                <span id="rank-name" class="rank-name">TURTLE</span>
+                <div style="font-size: 0.85rem; border-top: 1px solid rgba(0,0,0,0.1); padding-top: 10px;">
+                    Consistency: <span id="res-cons" style="font-weight: bold;">0</span>% | Peak: <span id="res-peak" style="font-weight: bold;">0</span>
+                </div>
+            </div>
+            <div class="leaderboard">
+                <h4>Local Top 5</h4>
+                <div id="lb-content"></div>
+                <button onclick="clearLB()" style="margin-top:10px; font-size:0.6rem; background:transparent; border:1px solid rgba(255,255,255,0.2); color:inherit;">Clear</button>
+            </div>
+        </div>
+        <canvas id="resultChart" height="120"></canvas>
     </div>
 </div>
 
 <script>
-    let clicks = 0;
-    let startTime = null;
-    let timerId = null;
-    let isRunning = false;
-    let isFinished = false;
-    let clickHistory = [];
-    let chartInstance = null;
-    let inputKey = "MOUSE";
+    let clicks = 0, startTime = null, timerId = null, isRunning = false, isFinished = false;
+    let clickHistory = [], inputKeys = ["MOUSE"], chartInstance = null;
+    const canvas = document.getElementById('particle-canvas');
+    const c = canvas.getContext('2d');
+    let particles = [];
 
     const themes = [
-        { id: 'dark', name: 'Dark Slate', c1: '#0f172a', c2: '#38bdf8' },
-        { id: 'light', name: 'Pure Light', c1: '#f1f5f9', c2: '#2563eb' },
-        { id: 'neon', name: 'Hacker Neon', c1: '#000', c2: '#00ff41' },
-        { id: 'cyberpunk', name: 'Cyberpunk', c1: '#000', c2: '#ff003c' },
-        { id: 'matrix', name: 'The Matrix', c1: '#001100', c2: '#00FF41' },
-        { id: 'sunset', name: 'Retro Sunset', c1: '#2d1b2d', c2: '#ef476f' },
-        { id: 'ocean', name: 'Deep Ocean', c1: '#001219', c2: '#ee9b00' },
-        { id: 'forest', name: 'Deep Forest', c1: '#061e16', c2: '#52b788' },
-        { id: 'lavender', name: 'Lavender', c1: '#f3f0ff', c2: '#8b5cf6' },
-        { id: 'midnight', name: 'Midnight', c1: '#020617', c2: '#6366f1' },
-        { id: 'rose', name: 'Rose Petal', c1: '#fff1f2', c2: '#f43f5e' },
-        { id: 'mint', name: 'Fresh Mint', c1: '#f0fdf4', c2: '#22c55e' },
-        { id: 'volcano', name: 'Volcano', c1: '#180000', c2: '#ef4444' },
-        { id: 'space', name: 'Deep Space', c1: '#0b0118', c2: '#d8b4fe' },
-        { id: 'sakura', name: 'Sakura', c1: '#fff5f7', c2: '#f472b6' },
-        { id: 'coffee', name: 'Espresso', c1: '#3e2723', c2: '#a1887f' },
-        { id: 'nordic', name: 'Nordic Blue', c1: '#2e3440', c2: '#88c0d0' },
-        { id: 'gold', name: 'Luxury Gold', c1: '#1a1a1a', c2: '#d4af37' }
+        { id: 'dark', c1: '#0f172a', c2: '#38bdf8' }, { id: 'light', c1: '#f1f5f9', c2: '#2563eb' },
+        { id: 'neon', c1: '#000', c2: '#00ff41' }, { id: 'cyberpunk', c1: '#000', c2: '#ff003c' },
+        { id: 'matrix', c1: '#001100', c2: '#00FF41' }, { id: 'sunset', c1: '#2d1b2d', c2: '#ef476f' },
+        { id: 'ocean', c1: '#001219', c2: '#ee9b00' }, { id: 'forest', c1: '#061e16', c2: '#52b788' },
+        { id: 'lavender', c1: '#f3f0ff', c2: '#8b5cf6' }, { id: 'midnight', c1: '#020617', c2: '#6366f1' },
+        { id: 'rose', c1: '#fff1f2', c2: '#f43f5e' }, { id: 'mint', c1: '#f0fdf4', c2: '#22c55e' },
+        { id: 'volcano', c1: '#180000', c2: '#ef4444' }, { id: 'space', c1: '#0b0118', c2: '#d8b4fe' },
+        { id: 'sakura', c1: '#fff5f7', c2: '#f472b6' }, { id: 'coffee', c1: '#3e2723', c2: '#a1887f' },
+        { id: 'nordic', c1: '#2e3440', c2: '#88c0d0' }, { id: 'gold', c1: '#1a1a1a', c2: '#d4af37' }
     ];
+
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    function playClickSound() {
+        const type = document.getElementById('sound-type').value;
+        if (type === 'none') return;
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain); gain.connect(audioCtx.destination);
+        osc.type = type === 'pop' ? 'sine' : 'square';
+        osc.frequency.setValueAtTime(type === 'pop' ? 400 : 150, audioCtx.currentTime);
+        if (type === 'pop') osc.frequency.exponentialRampToValueAtTime(10, audioCtx.currentTime + 0.1);
+        gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+        gain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.1);
+        osc.start(); osc.stop(audioCtx.currentTime + 0.1);
+    }
 
     function initThemes() {
         const grid = document.getElementById('theme-grid');
         themes.forEach(t => {
-            const div = document.createElement('div');
-            div.className = 'theme-opt';
-            div.onclick = () => setTheme(t.id);
-            div.innerHTML = `
+            const d = document.createElement('div');
+            d.className = 'theme-opt';
+            d.onclick = () => setTheme(t.id);
+            d.innerHTML = `
                 <div class="palette">
-                    <div class="pal-1" style="background:${t.c1}"></div>
-                    <div class="pal-2" style="background:${t.c2}"></div>
+                    <div class="pal-bg" style="background:${t.c1}"></div>
+                    <div class="pal-acc" style="background:${t.c2}"></div>
                 </div>
-                <span>${t.name}</span>
+                <span>${t.id.charAt(0).toUpperCase() + t.id.slice(1)}</span>
             `;
-            grid.appendChild(div);
+            grid.appendChild(d);
         });
+    }
+
+    function setTheme(t) { document.body.setAttribute('data-theme', t); }
+    function toggleSettings() { const s = document.getElementById('settings-panel'); s.style.display = s.style.display === 'grid' ? 'none' : 'grid'; }
+
+    function changeMode() {
+        const mode = document.getElementById('mode-select').value;
+        document.getElementById('mode-input').value = mode === 'time' ? 5 : 100;
+        resetTest();
+    }
+
+    function bindKey() {
+        const el = document.getElementById('key-bind');
+        el.value = "Press key...";
+        const capture = (e) => {
+            e.preventDefault();
+            const key = e.key === " " ? "SPACE" : e.key.toUpperCase();
+            if (document.getElementById('multi-key').checked) {
+                if (!inputKeys.includes(key)) inputKeys.push(key);
+            } else { inputKeys = [key]; }
+            el.value = inputKeys.join(", ");
+            document.getElementById('input-hint').innerText = "Input: " + el.value;
+            window.removeEventListener('keydown', capture);
+        };
+        window.addEventListener('keydown', capture);
     }
 
     function startTest() {
-        if (isFinished || isRunning) return;
-        isRunning = true;
-        clicks = 0;
-        clickHistory = [];
+        isRunning = true; isFinished = false; clicks = 0; clickHistory = [];
         startTime = Date.now();
-        document.getElementById('click-instruction').innerText = "CLICK NOW!";
-        timerId = setInterval(updateTimer, 10);
-        registerClick();
+        document.getElementById('click-text').innerText = "GO!";
+        timerId = setInterval(tick, 10);
     }
 
-    function updateTimer() {
-        const duration = parseFloat(document.getElementById('test-duration').value) || 5;
+    function tick() {
+        const mode = document.getElementById('mode-select').value;
+        const val = parseFloat(document.getElementById('mode-input').value);
         const elapsed = (Date.now() - startTime) / 1000;
-        const remaining = Math.max(0, duration - elapsed);
-        
-        document.getElementById('display-timer').innerText = remaining.toFixed(1) + "s";
-        document.getElementById('display-cps').innerText = (clicks / Math.max(0.1, elapsed)).toFixed(2);
-
-        if (remaining <= 0) endTest(duration);
+        if (mode === 'time') {
+            const rem = Math.max(0, val - elapsed);
+            document.getElementById('target-val').innerText = rem.toFixed(1) + "s";
+            if (rem <= 0) endTest();
+        } else {
+            document.getElementById('target-val').innerText = elapsed.toFixed(1) + "s";
+            if (clicks >= val) endTest();
+        }
+        document.getElementById('stat-cps').innerText = (clicks / Math.max(0.1, elapsed)).toFixed(2);
     }
 
-    function registerClick() {
+    function handleInput(type, e) {
         if (isFinished) return;
-        if (!isRunning) { startTest(); return; }
+        if (type === 'KEY' && !inputKeys.includes(e.key.toUpperCase() === " " ? "SPACE" : e.key.toUpperCase())) return;
+        if (type === 'KEY') e.preventDefault();
+        if (!isRunning) startTest();
         clicks++;
-        document.getElementById('display-clicks').innerText = clicks;
-        clickHistory.push({ time: (Date.now() - startTime) / 1000 });
+        document.getElementById('stat-clicks').innerText = clicks;
+        clickHistory.push({ t: (Date.now() - startTime) / 1000 });
+        playClickSound();
+        if (document.getElementById('check-particles').checked) spawnParticles();
+        if (document.getElementById('check-shake').checked) {
+            document.getElementById('main-container').classList.add('shake-active');
+            setTimeout(() => document.getElementById('main-container').classList.remove('shake-active'), 50);
+        }
     }
 
-    function endTest(duration) {
-        clearInterval(timerId);
-        isRunning = false;
-        isFinished = true;
-        document.getElementById('click-area').classList.add('disabled');
-        document.getElementById('click-instruction').innerText = "FINISHED";
-        document.getElementById('display-timer').innerText = "0.0s";
-        showChart(duration);
+    function endTest() {
+        clearInterval(timerId); isRunning = false; isFinished = true;
+        document.getElementById('click-text').innerText = "FINISH";
+        processResults();
     }
 
     function resetTest() {
-        clearInterval(timerId);
-        isRunning = false;
-        isFinished = false;
-        clicks = 0;
-        document.getElementById('display-clicks').innerText = "0";
-        document.getElementById('display-cps').innerText = "0.00";
-        document.getElementById('display-timer').innerText = document.getElementById('test-duration').value + ".0s";
-        document.getElementById('click-area').classList.remove('disabled');
-        document.getElementById('click-instruction').innerText = "Click to Start";
-        document.getElementById('results-container').style.display = 'none';
+        clearInterval(timerId); isRunning = false; isFinished = false; clicks = 0;
+        document.getElementById('stat-clicks').innerText = "0";
+        document.getElementById('stat-cps').innerText = "0.0";
+        document.getElementById('click-text').innerText = "CLICK TO START";
+        document.getElementById('results-area').style.display = 'none';
+        const mode = document.getElementById('mode-select').value;
+        document.getElementById('target-val').innerText = mode === 'time' ? parseFloat(document.getElementById('mode-input').value).toFixed(1) + "s" : "0.0s";
     }
 
-    function captureKey() {
-        const cfg = document.getElementById('key-config');
-        cfg.value = "Press any key...";
-        const listener = (e) => {
-            e.preventDefault();
-            inputKey = e.key === " " ? "Space" : e.key;
-            cfg.value = inputKey;
-            document.getElementById('key-hint').innerText = `Input: ${inputKey}`;
-            window.removeEventListener('keydown', listener);
-        };
-        window.addEventListener('keydown', listener);
-    }
-
-    function setTheme(id) {
-        document.body.setAttribute('data-theme', id);
-        if (isFinished) showChart(); // Refresh chart color
-    }
-
-    function toggleSettings() {
-        const p = document.getElementById('settings-panel');
-        p.style.display = p.style.display === 'block' ? 'none' : 'block';
-    }
-
-    function showChart(duration) {
-        document.getElementById('results-container').style.display = 'block';
-        const ctx = document.getElementById('cpsChart').getContext('2d');
-        const accent = getComputedStyle(document.body).getPropertyValue('--accent').trim();
+    function processResults() {
+        document.getElementById('results-area').style.display = 'block';
+        const elapsed = (Date.now() - startTime) / 1000;
+        const cps = parseFloat((clicks / elapsed).toFixed(2));
         
-        const labels = [];
-        const data = [];
-        const dur = duration || parseFloat(document.getElementById('test-duration').value);
-
-        for (let i = 1; i <= Math.ceil(dur); i++) {
-            labels.push(`${i}s`);
-            const count = clickHistory.filter(c => c.time > (i-1) && c.time <= i).length;
-            data.push(count);
+        // World Record Check
+        const rankNode = document.getElementById('rank-name');
+        rankNode.style.fontSize = "1.8rem"; 
+        
+        if (cps === 16.00) {
+            rankNode.innerText = "You Tied MrTimmy's World Record";
+            rankNode.style.fontSize = "1.1rem";
+        } else {
+            if (cps < 6) rankNode.innerText = "TURTLE";
+            else if (cps < 10) rankNode.innerText = "HUMAN";
+            else if (cps < 14) rankNode.innerText = "CHEETAH";
+            else rankNode.innerText = "CYBORG";
         }
 
+        saveLeaderboard(cps);
+        
+        const intervals = [];
+        for(let i=1; i<=Math.ceil(elapsed); i++) {
+            intervals.push(clickHistory.filter(c => c.t > i-1 && c.t <= i).length);
+        }
+        document.getElementById('res-cons').innerText = (100 - (Math.sqrt(intervals.reduce((a, b) => a + Math.pow(b - cps, 2), 0) / intervals.length) / (cps || 1) * 100)).toFixed(0);
+        document.getElementById('res-peak').innerText = Math.max(...intervals, 0);
+        renderChart(intervals);
+    }
+
+    function saveLeaderboard(cps) {
+        let lb = JSON.parse(localStorage.getItem('cps-leaderboard') || "[]");
+        lb.push({ cps, date: new Date().toLocaleDateString() });
+        lb.sort((a, b) => b.cps - a.cps);
+        lb = lb.slice(0, 5);
+        localStorage.setItem('cps-leaderboard', JSON.stringify(lb));
+        updateLBDisplay(lb);
+    }
+
+    function updateLBDisplay(lb) {
+        const cont = document.getElementById('lb-content');
+        cont.innerHTML = lb.map((e, i) => `<div class="lb-entry"><span>#${i+1}</span> <b>${e.cps} CPS</b> <span>${e.date}</span></div>`).join('');
+    }
+
+    function clearLB() { localStorage.removeItem('cps-leaderboard'); updateLBDisplay([]); }
+
+    function renderChart(data) {
+        const canv = document.getElementById('resultChart').getContext('2d');
         if (chartInstance) chartInstance.destroy();
-        chartInstance = new Chart(ctx, {
+        const accent = getComputedStyle(document.body).getPropertyValue('--accent');
+        chartInstance = new Chart(canv, {
             type: 'line',
             data: {
-                labels: labels,
-                datasets: [{
-                    label: 'Clicks / Sec',
-                    data: data,
-                    borderColor: accent,
-                    backgroundColor: accent + '33',
-                    fill: true,
-                    tension: 0.3,
-                    borderWidth: 3
-                }]
+                labels: data.map((_, i) => (i + 1) + "s"),
+                datasets: [{ data: data, borderColor: accent, tension: 0.4, fill: true, backgroundColor: accent + '22' }]
             },
-            options: {
-                plugins: { legend: { display: false } },
-                scales: { 
-                    y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.1)' } },
-                    x: { grid: { display: false } }
-                }
-            }
+            options: { plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
         });
     }
 
-    document.getElementById('click-area').onmousedown = (e) => { if (inputKey === "MOUSE") registerClick(); };
-    window.onkeydown = (e) => { 
-        if (inputKey !== "MOUSE" && e.key.toLowerCase() === inputKey.toLowerCase()) {
-            if (!e.repeat) registerClick();
-            if (e.key === " ") e.preventDefault();
+    function spawnParticles() {
+        for(let i=0; i<6; i++) {
+            particles.push({
+                x: Math.random() * canvas.width, y: Math.random() * canvas.height,
+                vx: (Math.random() - 0.5) * 8, vy: (Math.random() - 0.5) * 8,
+                life: 1.0, color: getComputedStyle(document.body).getPropertyValue('--accent')
+            });
         }
-    };
+    }
 
-    initThemes();
+    function updateParticles() {
+        c.clearRect(0, 0, canvas.width, canvas.height);
+        particles.forEach((p, i) => {
+            p.x += p.vx; p.y += p.vy; p.life -= 0.02;
+            c.globalAlpha = p.life; c.fillStyle = p.color;
+            c.fillRect(p.x, p.y, 3, 3);
+            if (p.life <= 0) particles.splice(i, 1);
+        });
+        requestAnimationFrame(updateParticles);
+    }
+
+    window.addEventListener('keydown', (e) => handleInput('KEY', e));
+    document.getElementById('click-area').addEventListener('mousedown', (e) => handleInput('MOUSE', e));
+    const resize = () => { canvas.width = document.getElementById('click-area').clientWidth; canvas.height = 260; };
+    window.onresize = resize; resize();
+    initThemes(); updateLBDisplay(JSON.parse(localStorage.getItem('cps-leaderboard') || "[]")); updateParticles();
 </script>
 </body>
 </html>
