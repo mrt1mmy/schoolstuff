@@ -2,100 +2,26 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-
-<title>Play Slope On Sz Games</title>
-
-<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-
-<link rel="manifest" href="manifest.json">
-<link rel="icon" href="https://github.com/sz-games/home/blob/main/G.png?raw=true">
-
-<meta name="description" content="Slope is an exciting 3D game where you guide a rolling ball down a steep slope, dodging obstacles and making sharp turns.">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Slope</title>
 
 <style>
-  body {
+  html, body {
     margin: 0;
+    padding: 0;
+    height: 100%;
     overflow: hidden;
-    font-family: Arial, Helvetica, sans-serif;
-    background-color: rgb(117, 117, 117);
   }
 
-  #game {
+  iframe {
     width: 100%;
+    height: 100%;
     border: none;
-  }
-
-  #Menu {
-    transition: 0.5s;
-    cursor: pointer;
-    position: fixed;
-    border-radius: 15px;
-    color: rgb(224, 224, 224);
-    background-color: #1d1d1dc0;
-    left: 0;
-    bottom: 0px;
-    margin: 10px;
-  }
-
-  .material-icons {
-    margin: 5px;
   }
 </style>
 </head>
 
 <body>
-
-<iframe id="game" frameborder="0" allowfullscreen></iframe>
-
-<div id="Menu">
-  <span class="material-icons" onclick="window.location = 'https://sz-games.github.io'">
-    arrow_back
-  </span>
-  <span class="material-icons" onclick="makeFullScreen()">
-    fullscreen
-  </span>
-</div>
-
-<script>
-  const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-
-  if (isMobile) {
-    document.getElementById('Menu').style.transform = "scale(1.1)";
-  } else {
-    document.getElementById('Menu').style.transform = "scale(1.0)";
-  }
-
-  var canvas = document.getElementById('game');
-  var isFull = false;
-
-  function requestFullScreen(element) {
-    var requestMethod = element.requestFullscreen || element.webkitRequestFullscreen || element.mozRequestFullScreen || element.msRequestFullscreen;
-
-    if (requestMethod) {
-      requestMethod.call(element);
-      resizeGame();
-    }
-  }
-
-  function makeFullScreen() {
-    isFull = true;
-    requestFullScreen(canvas);
-  }
-
-  function resizeGame() {
-    let hh = window.innerHeight;
-    document.getElementById('game').height = hh;
-  }
-
-  window.onresize = resizeGame;
-
-  // Load game instantly
-  document.getElementById('game').src = 'https://sz-games.github.io/slope/';
-
-  // Set initial height
-  resizeGame();
-</script>
-
+  <iframe src="https://sz-games.github.io/slope/" allowfullscreen></iframe>
 </body>
 </html>
