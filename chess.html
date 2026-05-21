@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fullscreen Chess</title>
+
+<style>
+html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: black;
+}
+
+.iframe-container {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+}
+
+.iframe-container iframe {
+    position: absolute;
+    top: -230px;
+    bottom:-1000px;
+    left: 0;
+    width: 100%;
+    height: calc(100% + 230px);
+    border: none;
+}
+</style>
+</head>
+
+<body>
+
+<div class="iframe-container">
+    <iframe
+        src="https://www.mathsisfun.com/games/chess.html"
+        allowfullscreen>
+    </iframe>
+</div>
+
+</body>
+</html>
