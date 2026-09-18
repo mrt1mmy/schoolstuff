@@ -542,7 +542,20 @@
     
     
 
- 
+ <script>
+document.addEventListener("click", function(event) {
+    const link = event.target.closest("a");
+
+    if (!link || !link.href) return;
+
+    event.preventDefault();
+
+    window.parent.postMessage({
+        type: "iframe-link",
+        url: link.href
+    }, "*");
+});
+</script>
     
     
     
